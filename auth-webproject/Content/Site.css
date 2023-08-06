@@ -1,0 +1,17 @@
+﻿@media screen and (min-width: 768px) {
+    .body-content {
+        padding: 0;
+    }
+}
+.centered-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('../images/image.png');
+    margin: 0; 
+    padding: 0; 
+}
