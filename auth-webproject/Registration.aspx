@@ -75,26 +75,26 @@
             <div class="form-group flex-container">
                 <div>
                     <maingen>Country</maingen>
-                    <asp:DropDownList ID="ddlCountry" runat="server" CssClass="dropdown" Required="true">
-                        <asp:ListItem Text="Select Country" Value="" Disabled="true"></asp:ListItem>
-                        <asp:ListItem Text="India" Value="India" Selected="true"></asp:ListItem>
-                        <asp:ListItem Text="USA" Value="USA"></asp:ListItem>
-                        <asp:ListItem Text="UK" Value="UK"></asp:ListItem>
-                        <asp:ListItem Text="Canada" Value="Canada"></asp:ListItem>
-                        <asp:ListItem Text="Japan" Value="Japan"></asp:ListItem>
-                    </asp:DropDownList>
+                    <asp:DropDownList ID="ddlCountry" runat="server" AutoPostBack="True"   
+                    DataTextField="co_name" DataValueField="co_id" AppendDataBoundItems="true"   
+                    onselectedindexchanged="DropDownList1_SelectedIndexChanged">  
+                    <asp:ListItem Value="0">--Select Country--</asp:ListItem>  
+                </asp:DropDownList> 
                 </div>
                 <div>
                     <maingen>State</maingen>
-                    <asp:DropDownList ID="ddlState" runat="server" CssClass="dropdown" >
-                        <asp:ListItem Text="Select State" Value="" Disabled="true" Selected="true"></asp:ListItem>
-                    </asp:DropDownList>
+                     <asp:DropDownList ID="ddlState" runat="server" AppendDataBoundItems="true" DataTextField="st_name"   
+                    DataValueField="st_id" AutoPostBack="True"   
+                    onselectedindexchanged="DropDownList2_SelectedIndexChanged">  
+                    <asp:ListItem Value="0">-- Select State--</asp:ListItem>  
+                </asp:DropDownList> 
                 </div>
                 <div>
                     <maingen>City</maingen>
-                    <asp:DropDownList ID="ddlCity" runat="server" CssClass="dropdown" >
-                        <asp:ListItem Text="Select City" Value="" Disabled="true" Selected="true"></asp:ListItem>
-                    </asp:DropDownList>
+                    <asp:DropDownList ID="ddlCity" runat="server" AppendDataBoundItems="true" DataTextField="ct_name"   
+                    DataValueField="ct_id">  
+                    <asp:ListItem Value="0">-- Select City--</asp:ListItem>  
+                </asp:DropDownList>
                 </div>
             </div>
                 <div>
@@ -102,6 +102,8 @@
                 </div>
             <div class="form-group">
                 <asp:Button ID="Button1" runat="server" CssClass="register-button" Text="Register" OnClick="btnRegister_Click" />
+                <asp:GridView ID="GridView1" runat="server">
+                </asp:GridView>
             </div>
         </div>
     </div>

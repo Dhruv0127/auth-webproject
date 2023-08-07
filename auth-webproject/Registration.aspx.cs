@@ -1,104 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Drawing;
 
 namespace auth_webproject
 {
     public partial class WebForm2 : System.Web.UI.Page
     {
+
+        String table_name = "user_entry";
+        private SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""E:\App Dev\Net\auth-webproject\auth-webproject\App_Data\learning.mdf"";Integrated Security=True");
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            if (conn.State == System.Data.ConnectionState.Open) { conn.Close(); }
+            conn.Open();
+            if (!Page.IsPostBack)
             {
-              /*  LoadCountryDropdown();*/
+                SqlCommand cmd = new SqlCommand("select * from country_tbl", conn);
+                SqlDataAdapter sda = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                sda.Fill(dt);
+                ddlCountry.DataSource = dt;
+                ddlCountry.DataBind();
             }
         }
-/*
-        protected void ddlCountry_SelectedIndexChanged(object sender, EventArgs e)
+        protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LoadStateDropdown(ddlCountry.SelectedItem.Value);
-        }
+            ddlState.Items.Clear();
+            ddlState.Items.Add("Select State");
 
-        protected void ddlState_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            LoadCityDropdown(ddlState.SelectedItem.Value);
-        }
-
-        private Dictionary<string, Dictionary<string, List<string>>> GetCountriesData()
-        {
-            return new Dictionary<string, Dictionary<string, List<string>>>
-            {
-                {
-                    "USA",
-                    new Dictionary<string, List<string>>
-                    {
-                        {"New York", new List<string>{"New York City", "Buffalo"}},
-                        {"California", new List<string>{"Los Angeles", "San Francisco"}},
-                        {"Texas", new List<string>{"Houston", "Austin"}}
-                    }
-                },
-                // ... Repeat the same pattern for other countries ...
-            };
-        }
-
-        private void LoadCountryDropdown()
-        {
-            ddlCountry.DataSource = GetCountries();
-            ddlCountry.DataBind();
-        }
-
-        private void LoadStateDropdown(string country)
-        {
-            ddlState.DataSource = GetStates(country);
+            SqlCommand cmd = new SqlCommand("select * from state_tbl where co_id='" + ddlCountry.SelectedItem.Value + "' ", conn);
+            SqlDataAdapter sda = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            sda.Fill(dt);
+            ddlState.DataSource = dt;
             ddlState.DataBind();
         }
-
-        private void LoadCityDropdown(string state)
+        protected void DropDownList2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ddlCity.DataSource = GetCities(state);
+            ddlCity.Items.Clear();
+            ddlCity.Items.Add("Select State");
+
+            SqlCommand cmd = new SqlCommand("select * from city_tbl where st_id='" + ddlState.SelectedItem.Value + "' ", conn);
+            SqlDataAdapter sda = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            sda.Fill(dt);
+
+            ddlCity.DataSource = dt;
             ddlCity.DataBind();
-        }
 
-        private List<ListItem> GetCountries()
-        {
-            Dictionary<string, Dictionary<string, List<string>>> countriesData = GetCountriesData();
-            return countriesData.Keys.Select(country => new ListItem(country)).ToList();
         }
-
-        private List<ListItem> GetStates(string country)
-        {
-            Dictionary<string, Dictionary<string, List<string>>> countriesData = GetCountriesData();
-            if (countriesData.ContainsKey(country))
-            {
-                return countriesData[country].Keys.Select(state => new ListItem(state, state)).ToList();
-            }
-            return new List<ListItem>();
-        }
-
-        private List<ListItem> GetCities(string state)
-        {
-            Dictionary<string, Dictionary<string, List<string>>> countriesData = GetCountriesData();
-            foreach (var countryData in countriesData.Values)
-            {
-                foreach (var stateData in countryData.Values)
-                {
-                    if (stateData.ContainsKey(state))
-                    {
-                        return stateData[state].Select(city => new ListItem(city, city)).ToList();
-                    }
-                }
-            }
-            return new List<ListItem>();
-        }
-
-        */
         protected void btnRegister_Click(object sender, EventArgs e)
         {
             string username = this.username.Text;
             string email = this.email.Text;
+            string password = this.password.Text;
             string dateOfBirth = this.dateOfBirth.Text;
             string hobbies = string.Join(", ", GetSelectedHobbies());
             string gender = GetSelectedGender();
@@ -122,6 +83,15 @@ namespace auth_webproject
                                  $"<strong>Address:</strong> {address}<br />";
 
             userDetailsDiv.InnerHtml = userDetails;
+
+
+
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandType = System.Data.CommandType.Text;
+            cmd.CommandText = $"insert into {table_name} values('" + username + "','" + email + "','" + password + "','" + dateOfBirth + "','" + age + "','" + hobbies + "','" + gender + "','" + country + "','" + state + "','" + city + "','" + address + "')";
+            cmd.ExecuteNonQuery();
+            Display_data("country_tbl", GridView1);
+
         }
 
         private int CalculateAge(DateTime dob)
@@ -156,6 +126,23 @@ namespace auth_webproject
                 return "Female";
             else
                 return "Unknown";
+        }
+        protected void Button2_Click(object sender, EventArgs e)
+        {
+            Display_data("country_tbl", GridView1);
+        }
+
+        public void Display_data(String td, GridView gd)
+        {
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandType = System.Data.CommandType.Text;
+            cmd.CommandText = $"select * from {td}";
+            cmd.ExecuteNonQuery();
+            DataTable dataTable = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(dataTable);
+            gd.DataSource = dataTable;
+            gd.DataBind();
         }
     }
 }
